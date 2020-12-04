@@ -1,0 +1,43 @@
+# vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
+%YAML 1.1
+---
+# Keep the includes first to illustrate that definitions that everything that
+# follows override included definitions.
+include:
+  # Use MergeRequest pipelines
+  # https://docs.gitlab.com/ee/ci/yaml/#workflowrules-templates
+  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+  - local: /ci/default.yml
+  - local: /ci/container.yml
+  - local: /ci/nagger.yml
+  - local: /ci/rebase.yml
+
+
+lint:
+  image: ${PYTHON_IMAGE}
+  stage: check
+  script:
+    - pip3 install yamllint
+    - yamllint ci
+    - yamllint .gitlab-ci.yml
+
+
+rebase:lint:
+  extends: .rebase
+  needs: []
+  script:
+    - pip3 install yamllint
+    - git every -x 'yamllint ci/ .gitlab-ci.yml'
+
+
+container:build:
+  extends: .container:build
+  variables:
+    SUBDIR: .test
+
+
+container:publish:
+  extends: .container:publish
+  variables:
+    SUBDIR: .test
+...

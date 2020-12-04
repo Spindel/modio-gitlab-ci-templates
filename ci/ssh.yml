@@ -1,0 +1,24 @@
+%YAML 1.1
+# vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
+# yamllint disable rule:line-length
+---
+# This implements a before_script that sets up SSH against the gitlab
+# environment for some kind of job.
+#
+# Use cases:
+# - requirements.txt referring to a git+ssh url that needs to check-out
+#   something
+#
+# It assumes the following:
+#
+# - ssh is available inside the container
+# - A variable named SSH_PRIVATE_KEY contains a private key
+
+.gitlab-ssh:pre:
+  before_script:
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - echo "gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf" >> ~/.ssh/known_hosts
+    - echo "dist.modio.se ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKjmJ+xw0gImsKn9anGdhP9Om8y+FsKvKBbqotwx1v5" > ~/.ssh/known_hosts
+...

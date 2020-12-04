@@ -1,0 +1,49 @@
+%YAML 1.1
+# vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
+# yamllint disable rule:line-length
+---
+# The modio defaults are fairly simple but sets for all our CI pipelines
+
+default:
+  # Allow running pipelines to be cancelled if made redundant
+  interruptible: true
+  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:master
+
+  # Retry jobs when parts of the CI system itself fails
+  # https://docs.gitlab.com/ee/ci/yaml/#retry
+  retry:
+    max: 2
+    when:
+      - api_failure
+      - runner_system_failure
+      - scheduler_failure
+  tags:
+    - x86_64
+
+variables:
+  # Podman defaults to OCI images, since 2019-02-15+ onwards, gitlab registry
+  # fails to work properly with the default `oci` images.
+  # TODO: Test & bug-report this
+  BUILDAH_FORMAT: docker
+  FEDORA_ROOT_RELEASE: 33
+  # Convenient as these are the most common images used in our CI pipes
+  BUILD_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:master
+  PYTHON_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/python:master
+
+# Standardized stages for our pipelines, prepending two early stages to the
+# Gitlab CI default [build, test, deploy]
+#
+# When there are no integrations tests, the build and deploy jobs can be fused
+# into one job, running in the deploy stage
+stages:
+  # perform early validation, linting, unit tests, etc
+  - check
+  # prepare artifacts for the build stage
+  - prepare
+  # create deployable artifacts, packages, containers
+  - build
+  # run integration tests on deployables, and other deployment abort checks
+  - test
+  # push the button
+  - deploy
+...

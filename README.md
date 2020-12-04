@@ -1,3 +1,3 @@
-# Ci
+# CI
 
-Gitlab CI templates
+Gitlab CI templates for other projects

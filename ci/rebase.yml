@@ -1,0 +1,47 @@
+%YAML 1.1
+# vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
+# yamllint disable rule:line-length
+---
+# Rebase template
+#
+# This template assumes that `git` is present in the CI image running it.
+# It sets up a before_script which will configure git and create and set up an
+# alias called `every` that will run the rebase jobs against the MAIN branch.
+#
+# Due to how interactive rebase works with execute, !fixup commits will be
+# folded into the right place before running lints.
+#
+# Thus, to use this, we can do:
+#
+# rebase:test:
+#    extends: .rebase
+#    script:
+#      - pip install -r requirements.txt
+#      - git every -x 'pytest'
+#
+#
+.rebase:
+  stage: test
+  allow_failure: true
+  variables:
+    # It might be enough to use GIT_FETCH_EXTRA_FLAGS to also fetch the
+    # merge-point and master.
+    # That optimization and debugging is left for later.
+    GIT_DEPTH: 0
+    # The following prevents git from opening an editor when doing interactive
+    # rebase
+    GIT_SEQUENCE_EDITOR: ':'
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+  before_script:
+    - git config --global user.name "CI system"
+    - git config --global user.email "ci@localhost"
+    - git config --global rebase.autoSquash True
+    - git config --global alias.where "!git --no-pager log --oneline --max-count=1"
+    - git config --global alias.every "rebase --interactive --autosquash --rebase-merges origin/${CI_DEFAULT_BRANCH} -x 'git where'"
+...

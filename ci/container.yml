@@ -1,0 +1,39 @@
+%YAML 1.1
+# vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
+# yamllint disable rule:line-length
+---
+# This implements our normal "two phase" container that allows a CI step to run
+# a test container in between.
+#
+# If new dependencies are needed, either use before_script / after_script,
+# and/or makefile dependencies.
+.container:build:
+  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:master
+  stage: build
+  tags:
+    - x86_64
+  script:
+    - make ${SUBDIR:+--directory=}${SUBDIR} login
+    - make ${SUBDIR:+--directory=}${SUBDIR} temp-publish
+
+
+.container:publish:
+  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/container:master
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+      allow_failure: true
+    - when: never
+
+  tags:
+    - x86_64
+  script:
+    - make ${SUBDIR:+--directory=}${SUBDIR} login
+    - make ${SUBDIR:+--directory=}${SUBDIR} temp-pull
+    - make ${SUBDIR:+--directory=}${SUBDIR} publish
+...
