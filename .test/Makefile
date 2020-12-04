@@ -1,4 +1,4 @@
-IMAGE_REPO = registry.gitlab.com/modioab/agile/testcase
+IMAGE_REPO = registry.gitlab.com/modioab/ci/testcase
 IMAGE_BUILD_FROM ?= registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/python:master
 
 IMAGE_TEST_ARGS = -t --rm=true
