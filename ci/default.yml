@@ -29,6 +29,8 @@ variables:
   # Convenient as these are the most common images used in our CI pipes
   BUILD_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:master
   PYTHON_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/python:master
+  CONTAINER_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/container:master
+  GO_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/go:master
 
 # Standardized stages for our pipelines, prepending two early stages to the
 # Gitlab CI default [build, test, deploy]
