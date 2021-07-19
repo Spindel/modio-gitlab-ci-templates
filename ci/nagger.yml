@@ -5,6 +5,8 @@ nagger:
   image: registry.gitlab.com/modioab/nagger:master
   stage: test
   needs: []
+  variables:
+    GIT_SUBMODULE_STRATEGY: none
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
