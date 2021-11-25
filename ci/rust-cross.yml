@@ -1,0 +1,67 @@
+%YAML 1.1
+# vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
+# yamllint disable rule:line-length
+---
+
+.rust:cross:matrix:
+  parallel:
+    matrix:
+      - TARGET:
+          - armv7-unknown-linux-gnueabihf
+        IMAGE: registry.gitlab.com/modioab/base-image/debian9/rust-cross:master
+        STRIP: arm-linux-gnueabihf-strip
+
+      - TARGET:
+          - x86_64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
+        IMAGE: registry.gitlab.com/modioab/base-image/debian/rust:master
+        STRIP: x86_64-linux-gnu-strip
+
+
+# clippy set to deny everything.
+.rust:clippy:
+  stage: check
+  script:
+    - cargo clippy -- -D clippy::cargo -D clippy::all
+
+# Various lints that we usually want
+.rust:check:
+  stage: check
+  script:
+    - rustc --version && cargo --version
+    # Don't run "cargo check" here as "cargo test" stage will do compile test of the code.
+    - cargo fmt -- --check
+    - cargo clippy --workspace
+    - cargo clippy --workspace -- -W clippy::cargo
+    - cargo doc --no-deps -p ${PACKAGENAME}
+
+# Compile, then run, test-cases
+.rust:test:
+  stage: test
+  script:
+    - rustc --version && cargo --version
+    - cargo build --tests -j1
+    - dbus-run-session -- cargo test --workspace --verbose
+
+
+# similar to the above, but release mode. Most of the logic is inverted
+.rust:cross:
+  extends: .rust:cross:matrix
+  image: ${IMAGE}
+  stage: prepare
+  rules:
+    # do not run the job if PACKAGENAME is not set
+    - if: '$PACKAGENAME == null'
+      when: never
+    - when: on_success
+  variables:
+    FILENAME: target/${TARGET}/release/${PACKAGENAME}
+  script:
+    - echo "Running in ${IMAGE}. Thank you GitLab"
+    - cargo build --release -p ${PACKAGENAME} --target ${TARGET}
+    - 'set -x; ${STRIP} ${FILENAME}'
+  artifacts:
+    name: "$CI_COMMIT_REF_SLUG-${TARGET}"
+    paths:
+      - ${FILENAME}
+...
