@@ -48,7 +48,7 @@
 .rust:cross:
   extends: .rust:cross:matrix
   image: ${IMAGE}
-  stage: cross
+  stage: prepare
   rules:
     # do not run the job if PACKAGENAME is not set
     - if: '$PACKAGENAME == null'
