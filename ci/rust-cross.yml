@@ -8,13 +8,10 @@
     matrix:
       - TARGET:
           - armv7-unknown-linux-gnueabihf
-        IMAGE: registry.gitlab.com/modioab/base-image/debian9/rust-cross:master
         STRIP: arm-linux-gnueabihf-strip
-
       - TARGET:
           - x86_64-unknown-linux-gnu
           - x86_64-unknown-linux-musl
-        IMAGE: registry.gitlab.com/modioab/base-image/debian/rust:master
         STRIP: x86_64-linux-gnu-strip
 
 
@@ -47,7 +44,7 @@
 # similar to the above, but release mode. Most of the logic is inverted
 .rust:cross:
   extends: .rust:cross:matrix
-  image: ${IMAGE}
+  image: registry.gitlab.com/modioab/base-image/debian/rust:master
   stage: prepare
   rules:
     # do not run the job if PACKAGENAME is not set
@@ -57,7 +54,6 @@
   variables:
     FILENAME: target/${TARGET}/release/${PACKAGENAME}
   script:
-    - echo "Running in ${IMAGE}. Thank you GitLab"
     - cargo build --release -p ${PACKAGENAME} --target ${TARGET}
     - 'set -x; ${STRIP} ${FILENAME}'
   artifacts:
