@@ -25,7 +25,7 @@ variables:
   # fails to work properly with the default `oci` images.
   # TODO: Test & bug-report this
   BUILDAH_FORMAT: docker
-  FEDORA_ROOT_RELEASE: 34
+  FEDORA_ROOT_RELEASE: 35
   # Convenient as these are the most common images used in our CI pipes
   BUILD_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:master
   PYTHON_IMAGE: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/python:master
