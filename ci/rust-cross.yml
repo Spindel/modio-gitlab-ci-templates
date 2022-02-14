@@ -52,19 +52,22 @@
       when: never
     - when: on_success
   variables:
-    FILENAME: target/${TARGET}/release/${PACKAGENAME}
+    RELNAME: target/${TARGET}/release/${PACKAGENAME}
+    FILENAME: ${CI_PROJECT_DIR}/target/${TARGET}/release/${PACKAGENAME}
   script:
-    - cargo build --release -p ${PACKAGENAME} --target ${TARGET}
+    - cargo build --target-dir "${CI_PROJECT_DIR}/target" --release -p ${PACKAGENAME} --target ${TARGET}
     - 'set -x; ${STRIP} ${FILENAME}; set +x'
-    - export SIZE=$(stat --format=%s "${FILENAME}")
-    - echo > metrics.txt  "# TYPE binary_size gauge"
-    - echo >> metrics.txt "# UNIT binary_size bytes"
-    - echo >> metrics.txt "binary_size{package=\"${PACKAGENAME}\",target=\"${TARGET}\"} ${SIZE}"
-    - echo >> metrics.txt "# EOF"
+    - |
+      cat > "${CI_PROJECT_DIR}/metrics.txt" << __EOF__
+      # TYPE binary_size gauge
+      # UNIT binary_size bytes
+      binary_size{package="${PACKAGENAME}",target="${TARGET}"} $(stat --format=%s "${FILENAME}")
+      # EOF
+      __EOF__
   artifacts:
-    name: "$CI_COMMIT_REF_SLUG-${TARGET}"
+    name: "${CI_COMMIT_REF_SLUG}-${TARGET}"
     paths:
-      - ${FILENAME}
+      - ${RELNAME}
     reports:
       metrics: metrics.txt
 ...
