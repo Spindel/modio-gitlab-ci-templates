@@ -56,11 +56,13 @@
   script:
     - cargo build --release -p ${PACKAGENAME} --target ${TARGET}
     - 'set -x; ${STRIP} ${FILENAME}; set +x'
-    - export SIZE=$(stat --format=%s "${FILENAME}")
-    - echo > metrics.txt  "# TYPE binary_size gauge"
-    - echo >> metrics.txt "# UNIT binary_size bytes"
-    - echo >> metrics.txt "binary_size{package=\"${PACKAGENAME}\",target=\"${TARGET}\"} ${SIZE}"
-    - echo >> metrics.txt "# EOF"
+    - |
+      cat > metrics.txt << __EOF__
+      # TYPE binary_size gauge
+      # UNIT binary_size bytes
+      binary_size{package="${PACKAGENAME}",target="${TARGET}"} $(stat --format=%s "${FILENAME}")
+      # EOF
+      __EOF__
   artifacts:
     name: "$CI_COMMIT_REF_SLUG-${TARGET}"
     paths:
