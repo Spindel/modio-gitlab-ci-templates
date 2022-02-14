@@ -11,6 +11,7 @@ include:
   - local: /ci/container.yml
   - local: /ci/nagger.yml
   - local: /ci/rebase.yml
+  - local: /ci/rust-cross.yml
 
 
 lint:
@@ -40,4 +41,13 @@ container:publish:
   extends: .container:publish
   variables:
     SUBDIR: .test
+
+
+rust:cross:
+  extends: .rust:cross
+  needs: []
+  variables:
+    PACKAGENAME: citest
+  before_script:
+    - cd .test
 ...
