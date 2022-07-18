@@ -8,7 +8,7 @@
 # If new dependencies are needed, either use before_script / after_script,
 # and/or makefile dependencies.
 .container:build:
-  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:master
+  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:latest
   stage: build
   variables:
     PODMAN_PULL: "--pull=false"
@@ -21,7 +21,7 @@
 
 
 .container:publish:
-  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/container:master
+  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/container:latest
   stage: deploy
   variables:
     PODMAN_PULL: "--pull=false"

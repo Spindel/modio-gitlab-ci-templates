@@ -44,7 +44,7 @@
 # similar to the above, but release mode. Most of the logic is inverted
 .rust:cross:
   extends: .rust:cross:matrix
-  image: registry.gitlab.com/modioab/base-image/debian/rust:master
+  image: registry.gitlab.com/modioab/base-image/debian/rust:latest
   stage: prepare
   rules:
     # do not run the job if PACKAGENAME is not set
