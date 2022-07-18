@@ -42,6 +42,10 @@ container:publish:
   variables:
     SUBDIR: .test
 
+container:build-publish:
+  extends: .container:build-publish
+  variables:
+    SUBDIR: .test
 
 rust:cross:
   extends: .rust:cross
