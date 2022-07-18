@@ -41,4 +41,27 @@
     - make ${SUBDIR:+--directory=}${SUBDIR} login
     - make ${SUBDIR:+--directory=}${SUBDIR} temp-pull
     - make ${SUBDIR:+--directory=}${SUBDIR} publish
+
+
+.container:build-publish:
+  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/container:latest
+  stage: deploy
+  variables:
+    PODMAN_PULL: "--pull=false"
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      variables:
+        IMAGE_TAG_SUFFIX: latest
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+      allow_failure: true
+    - when: never
+  tags:
+    - x86_64
+  script:
+    - make ${SUBDIR:+--directory=}${SUBDIR} login
+    - make ${SUBDIR:+--directory=}${SUBDIR} build-publish
 ...
