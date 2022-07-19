@@ -44,13 +44,13 @@
 .rust:coverage:
   stage: test
   image: registry.gitlab.com/modioab/base-image/debian/rust:latest
-  variables:
-    LLVM_PROFILE_FILE: "coverage-%p-%m.profraw"
-    RUSTFLAGS: "-C instrument-coverage"
   script:
     - rustc --version && cargo --version
+    - source <(cargo llvm-cov show-env --export-prefix)
+    - cargo llvm-cov clean --workspace
     - cargo build --tests -j1
     - dbus-run-session -- cargo test --workspace --verbose
+    - cargo llvm-cov --no-run
     # These consume the coverage data, first to cobertura XML
     - grcov .
       --binary-path ./target/debug/
@@ -60,6 +60,7 @@
       --ignore "*cargo*"
       --output-type cobertura
       --output-path ${CI_PROJECT_DIR}/coverage.xml
+  coverage: '/^TOTAL.*\b(\d+\.\d+%)/'
   artifacts:
     reports:
       coverage_report:
