@@ -54,4 +54,12 @@ rust:cross:
     PACKAGENAME: citest
   before_script:
     - cd .test
+
+rust:coverage:
+  extends: .rust:coverage
+  needs: []
+  variables:
+    PACKAGENAME: citest
+  before_script:
+    - cd .test
 ...

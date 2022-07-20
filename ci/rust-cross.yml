@@ -40,6 +40,33 @@
     - cargo build --tests -j1
     - dbus-run-session -- cargo test --workspace --verbose
 
+# Run tests for coverage
+.rust:coverage:
+  stage: test
+  image: registry.gitlab.com/modioab/base-image/debian/rust:latest
+  script:
+    - rustc --version && cargo --version
+    - source <(cargo llvm-cov show-env --export-prefix)
+    - cargo llvm-cov clean --workspace
+    - cargo build --tests -j1
+    - dbus-run-session -- cargo test --workspace --verbose
+    - cargo llvm-cov --no-run
+    # These consume the coverage data, first to cobertura XML
+    - grcov .
+      --binary-path ./target/debug/
+      --source-dir .
+      --branch
+      --ignore-not-existing
+      --ignore "*cargo*"
+      --output-type cobertura
+      --output-path ${CI_PROJECT_DIR}/coverage.xml
+  coverage: '/^TOTAL.*\b(\d+\.\d+%)/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
 
 # similar to the above, but release mode. Most of the logic is inverted
 .rust:cross:
