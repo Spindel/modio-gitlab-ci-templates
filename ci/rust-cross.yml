@@ -62,6 +62,7 @@
       --output-path ${CI_PROJECT_DIR}/coverage.xml
   coverage: '/^TOTAL.*\b(\d+\.\d+%)/'
   artifacts:
+    expire_in: 1 week
     reports:
       coverage_report:
         coverage_format: cobertura
@@ -93,6 +94,7 @@
       __EOF__
   artifacts:
     name: "${CI_COMMIT_REF_SLUG}-${TARGET}"
+    expire_in: 1 day
     paths:
       - ${RELNAME}
     reports:
