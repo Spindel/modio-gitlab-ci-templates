@@ -17,8 +17,6 @@ default:
       - api_failure
       - runner_system_failure
       - scheduler_failure
-  tags:
-    - x86_64
 
 variables:
   # Podman defaults to OCI images, since 2019-02-15+ onwards, gitlab registry
