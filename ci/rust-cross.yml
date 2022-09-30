@@ -25,7 +25,7 @@
 .rust:check:
   stage: check
   script:
-    - rustc --version && cargo --version
+    - rustc --version && cargo --version && cargo fmt --version && cargo clippy --version
     # Don't run "cargo check" here as "cargo test" stage will do compile test of the code.
     - cargo fmt -- --check
     - cargo clippy --workspace
