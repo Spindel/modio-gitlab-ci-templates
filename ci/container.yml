@@ -12,8 +12,6 @@
   stage: build
   variables:
     PODMAN_PULL: "--pull=false"
-  tags:
-    - x86_64
   script:
     - make ${SUBDIR:+--directory=}${SUBDIR} login
     - podman info
@@ -35,8 +33,6 @@
       allow_failure: true
     - when: never
 
-  tags:
-    - x86_64
   script:
     - make ${SUBDIR:+--directory=}${SUBDIR} login
     - make ${SUBDIR:+--directory=}${SUBDIR} temp-pull
