@@ -32,7 +32,6 @@
       when: manual
       allow_failure: true
     - when: never
-
   script:
     - make ${SUBDIR:+--directory=}${SUBDIR} login
     - make ${SUBDIR:+--directory=}${SUBDIR} temp-pull
@@ -55,8 +54,6 @@
       when: manual
       allow_failure: true
     - when: never
-  tags:
-    - x86_64
   script:
     - make ${SUBDIR:+--directory=}${SUBDIR} login
     - make ${SUBDIR:+--directory=}${SUBDIR} build-publish
