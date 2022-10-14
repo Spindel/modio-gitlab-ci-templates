@@ -8,7 +8,7 @@ nagger:
   variables:
     GIT_SUBMODULE_STRATEGY: none
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $NAGGUS_KEY'
       when: always
     - when: never
   script:
