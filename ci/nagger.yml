@@ -2,7 +2,7 @@
 # vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
 ---
 nagger:
-  image: registry.gitlab.com/modioab/nagger:latest
+  image: ${IMAGE_REGISTRY_NAMESPACE}/nagger:latest
   stage: test
   needs: []
   variables:
