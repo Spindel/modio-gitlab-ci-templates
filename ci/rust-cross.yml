@@ -2,6 +2,8 @@
 # vim: expandtab:ts=8:sw=2:tw=80:fdm=marker:ft=yaml:
 # yamllint disable rule:line-length
 ---
+variables:
+  RUST_IMAGE: ${IMAGE_REGISTRY_NAMESPACE}/base-image/debian/rust:latest
 
 .rust:cross:matrix:
   parallel:
@@ -43,7 +45,7 @@
 # Run tests for coverage
 .rust:coverage:
   stage: test
-  image: registry.gitlab.com/modioab/base-image/debian/rust:latest
+  image: ${RUST_IMAGE}
   script:
     - rustc --version && cargo --version
     - source <(cargo llvm-cov show-env --export-prefix)
@@ -72,7 +74,7 @@
 # similar to the above, but release mode. Most of the logic is inverted
 .rust:cross:
   extends: .rust:cross:matrix
-  image: registry.gitlab.com/modioab/base-image/debian/rust:latest
+  image: ${RUST_IMAGE}
   stage: prepare
   rules:
     # do not run the job if PACKAGENAME is not set
