@@ -7,7 +7,7 @@
 default:
   # Allow running pipelines to be cancelled if made redundant
   interruptible: true
-  image: registry.gitlab.com/modioab/base-image/fedora-${FEDORA_ROOT_RELEASE}/build:latest
+  image: ${BUILD_IMAGE}
 
   # Retry jobs when parts of the CI system itself fails
   # https://docs.gitlab.com/ee/ci/yaml/#retry
